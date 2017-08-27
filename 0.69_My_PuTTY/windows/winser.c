@@ -298,6 +298,7 @@ static void serial_reconfig(void *handle, Conf *conf)
     /*
      * FIXME: what should we do if err returns something?
      */
+	(void)err;
 }
 
 /*

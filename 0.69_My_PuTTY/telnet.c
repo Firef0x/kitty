@@ -2,11 +2,11 @@
  * Telnet backend.
  */
 
+#include "putty.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
-
-#include "putty.h"
 
 #ifndef FALSE
 #define FALSE 0
@@ -866,7 +866,7 @@ static int telnet_send(void *handle, const char *buf, int len)
 	telnet->bufsize = sk_write(telnet->s, (char *)q, p - q);
 
 	while (p < end && !iswritable(*p)) {
-	    telnet->bufsize = 
+	    telnet->bufsize =
 		sk_write(telnet->s, (char *)(*p == IAC ? iac : cr), 2);
 	    p++;
 	}

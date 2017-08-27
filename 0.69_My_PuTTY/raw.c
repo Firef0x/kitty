@@ -2,11 +2,10 @@
  * "Raw" backend.
  */
 
+#include "putty.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
-
-#include "putty.h"
 
 #ifndef FALSE
 #define FALSE 0
@@ -113,7 +112,7 @@ static void raw_sent(Plug plug, int bufsize)
 
 /*
  * Called to set up the raw connection.
- * 
+ *
  * Returns an error message, or NULL on success.
  *
  * Also places the canonical host name into `realhost'. It must be

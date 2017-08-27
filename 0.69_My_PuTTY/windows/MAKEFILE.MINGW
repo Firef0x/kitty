@@ -98,11 +98,11 @@
 # You can define this path to point at your tools if you need to
 # TOOLPATH = c:\cygwin\bin\ # or similar, if you're running Windows
 # TOOLPATH = /pkg/mingw32msvc/i386-mingw32msvc/bin/
-CC = $(TOOLPATH)gcc
+CC = $(TOOLPATH)i686-w64-mingw32-gcc
 RC = $(TOOLPATH)windres
-CPP = $(TOOLPATH)g++
+CPP = $(TOOLPATH)i686-w64-mingw32-g++
 AR = $(TOOLPATH)ar
-RANLIB = $(TOOLPATH)ranlib
+RANLIB = $(TOOLPATH)i686-w64-mingw32-gcc-ranlib
 UPX = upx
 # Uncomment the following two lines to compile under Winelib
 # CC = winegcc
@@ -114,7 +114,7 @@ UPX = upx
 
 # Anciens flags: -DIVPORT -DPERFPORT (ne marche pas !!!)
 
-FDJFLAG = FDJ1
+FDJFLAG = FDJ
 
 # Ajouter   -g -ggdb   a CFLAGS pour avoir plus de debug !!!
 
@@ -141,14 +141,15 @@ CFLAGS = -Wall -O2 -D_WINDOWS -DWIN32S_COMPAT -D$(FDJFLAG) \
 		-D_NO_OLDNAMES -DNO_MULTIMON -DNO_HTMLHELP -I.././ -I../../ \
 		-I../charset/ -I../windows/ -I../unix/ -I../mac/ \
 		-I../macosx \
-		-I../../base64 -I../../bcrypt -I../../md5 -I../../regex -I../../url -I../../wincrypt -I../../rutty
+		-I../../base64 -I../../bcrypt -I../../md5 -I../../regex -I../../url -I../../wincrypt -I../../rutty \
+		-DSECURITY_WIN32
 CFLAGS_PLINK = -Wall -O2 -D_WINDOWS -DWIN32S_COMPAT \
 		-DPERSOPORT -DPUTTYCYG -DRECONNECTPORT -DNO_RUTTYPORT \
 		-D_NO_OLDNAMES -DNO_MULTIMON -DNO_HTMLHELP -I../. \
 		-I../charset -I../windows -I../unix -I../mac -I.\
 		-I../macosx \
 		-I../../base64 -I../../bcrypt -I../../md5 -I../../regex -I../../url
-LDFLAGS = -s -static-libgcc
+LDFLAGS = -s -static-libgcc -static-libstdc++
 
 RCFLAGS = $(RCINC) --define WIN32=1 --define _WIN32=1 --define WINVER=0x0400 \
 		-I.././ -I../charset/ -I../windows/ -I../unix/ -I../macosx/ \
@@ -164,13 +165,13 @@ CFLAGS += -DWINVER=0x0501 -D_WIN32_WINDOWS=0x0410 -D_WIN32_WINNT=0x0501
 
 .SUFFIXES:
 
-9bis: putty.exe pscp.exe plink.exe psftp.exe pageant.exe kitty.dll portable notrans
+9bis: putty.exe pscp.exe plink.exe psftp.exe pageant.exe putty.dll portable notrans
 	if [ -f putty.exe ] ; then cp -f putty.exe ../../bin/ ; fi
 	if [ -f pscp.exe ] ; then cp -f pscp.exe ../../bin/ ; fi
 	if [ -f plink.exe ] ; then cp -f plink.exe ../../bin/ ; fi
 	if [ -f psftp.exe ] ; then cp -f psftp.exe ../../bin/ ; fi
 	if [ -f pageant.exe ] ; then cp -f pageant.exe ../../bin/ ; fi
-	if [ -f kitty.dll ] ; then cp -f kitty.dll ../../bin/ ; fi
+	if [ -f putty.dll ] ; then cp -f putty.dll ../../bin/ ; fi
 	if [ -f putty_portable.exe ] ; then cp -f putty_portable.exe ../../bin/ ; fi
 	if [ -f putty_notrans.exe ] ; then cp -f putty_notrans.exe ../../bin/ ; fi
 	if [ -f putty_nohyperlink.exe ] ; then cp -f putty_nohyperlink.exe ../../bin/ ; fi
@@ -199,7 +200,7 @@ pageant.exe: aqsync.o conf.o misc.o pageant.o pageant.res.o sshaes.o sshbn.o \
 		-lshell32 -luser32 -lwinmm \
 		-lwinspool \
 		kitty_commun.o kitty_crypt.o kitty_registry.o wincrypto.o \
-		../../bcrypt/bcrypt.a ../../mini/mini.a \
+		../../bcrypt/kitty_bcrypt.a ../../mini/mini.a \
 		-lcrypt32
 
 plink.exe:  aqsync.o \
@@ -235,7 +236,7 @@ plink.exe:  aqsync.o \
 		winplink.o winproxy.o winsecur.o winser.o winshare.o \
 		winstore.o wintime.o winucs.o winx11.o x11fwd.o \
 		wincrypto.o adb.o kitty_registry.o kitty_commun.o kitty_ssh.o kitty_tools.o \
-		../../bcrypt/bcrypt.a ../../mini/mini.a \
+		../../bcrypt/kitty_bcrypt.a ../../mini/mini.a \
 		-ladvapi32 \
 		-lcomdlg32 -lgdi32 -limm32 -lole32 -lshell32 -luser32 \
 		-lwinmm -lwinspool \
@@ -271,7 +272,7 @@ pscp.exe: aqsync.o be_misc.o be_ssh.o callback.o cmdline.o conf.o cproxy.o \
 		winpgntc.o winproxy.o winsecur.o winsftp.o winshare.o \
 		winstore.o wintime.o winucs.o x11fwd.o \
 		kitty_commun.o kitty_ssh.o kitty_tools.o wincrypto.o kitty_registry.o \
-		../../bcrypt/bcrypt.a ../../mini/mini.a \
+		../../bcrypt/kitty_bcrypt.a ../../mini/mini.a \
 		-ladvapi32 -lcomdlg32 -lgdi32 -limm32 \
 		-lole32 -lshell32 -luser32 \
 		-lwinmm -lwinspool -lcrypt32 -lwsock32
@@ -306,7 +307,7 @@ psftp.exe: aqsync.o be_misc.o be_ssh.o callback.o cmdline.o conf.o cproxy.o \
 		winsecur.o winsftp.o winshare.o winstore.o wintime.o \
 		winucs.o x11fwd.o \
 		wincrypto.o kitty_registry.o kitty_commun.o kitty_ssh.o kitty_tools.o \
-		../../bcrypt/bcrypt.a ../../mini/mini.a \
+		../../bcrypt/kitty_bcrypt.a ../../mini/mini.a \
 		-ladvapi32 -lcomdlg32 -lgdi32 -limm32 \
 		-lole32 -lshell32 -luser32 \
 		-lwinmm -lwinspool -lcrypt32 -lwsock32
@@ -352,7 +353,7 @@ putty.exe: 	aqsync.o be_all_s.o be_misc.o callback.o cmdline.o conf.o \
 		pageant_integrated.o sshecdsag.o sshbcrypt.o \
 		adb.o kitty.o kitty_commun.o kitty_crypt.o kitty_image.o kitty_registry.o kitty_ssh.o kitty_tools.o kitty_win.o \
 		urlhack.o \
-		../../regex/libregex.a ../../bcrypt/bcrypt.a ../../jpeg/libjpeg.a \
+		../../regex/libregex.a ../../bcrypt/kitty_bcrypt.a ../../jpeg/libjpeg.a \
 		../../md5/MD5check.a ../../mini/mini.a ../../blocnote/notepad.a ../../base64/base64.a \
 		-ladvapi32 -lcomctl32 -lcomdlg32 -lgdi32 -limm32 -lole32 -lshell32 \
 		-luser32 -lwinmm -lwinspool \
@@ -1490,11 +1491,11 @@ winpgnt_integrated.o: ../windows/winpgnt.c ../putty.h ../ssh.h ../misc.h ../tree
 kitty_dll.res.o: ../../kitty_dll.rc
 	windres ../../kitty_dll.rc kitty_dll.res.o
 
-kitty.dll: ../../kitty_dll.c kitty_dll.res.o
-	$(CPP) -shared -o kitty.dll kitty_dll.res.o ../../kitty_dll.c \
-	-Wl,--whole-archive ../../base64/base64.a ../../regex/libregex.a ../../bcrypt/bcrypt.a ../../jpeg/libjpeg.a ../../md5/MD5check.a ../../blocnote/notepad.a ../../mini/mini.a -Wl,--no-whole-archive \
+putty.dll: ../../kitty_dll.c kitty_dll.res.o
+	$(CPP) -shared -o putty.dll kitty_dll.res.o ../../kitty_dll.c \
+	-Wl,--whole-archive ../../base64/base64.a ../../regex/libregex.a ../../bcrypt/kitty_bcrypt.a ../../jpeg/libjpeg.a ../../md5/MD5check.a ../../blocnote/notepad.a ../../mini/mini.a -Wl,--no-whole-archive \
 	-DBUILD_DLL -static-libgcc -lcomdlg32 -lgdi32
-	upx --best --compress-icons=2 kitty.dll
+	upx --best --compress-icons=2 putty.dll
 
 nohyperlink: putty_nohyperlink.exe
 
@@ -1540,7 +1541,7 @@ putty_nohyperlink.exe: be_all_s.o callback.o cmdline.o conf.o config.o cproxy.o 
 		wincrypto.o cygcfg.o cygterm.o winpzmodem.o \
 		adb.o kitty_nohyperlink.o kitty_commun.o kitty_crypt.o kitty_image.o kitty_registry.o kitty_ssh.o kitty_tools.o kitty_win.o \
 		urlhack_nohyperlink.o \
-		../../bcrypt/bcrypt.a ../../jpeg/libjpeg.a \
+		../../bcrypt/kitty_bcrypt.a ../../jpeg/libjpeg.a \
 		../../md5/MD5check.a ../../mini/mini.a ../../blocnote/notepad.a ../../base64/base64.a \
 		-ladvapi32 -lcomctl32 -lcomdlg32 -lgdi32 \
 		-limm32 -lole32 -lshell32 -luser32 -lwinmm -lwinspool \
@@ -1579,7 +1580,7 @@ putty_notrans.exe: be_all_s.o callback.o cmdline.o conf.o config.o cproxy.o dial
 		wincrypto.o cygcfg.o cygterm.o winpzmodem.o \
 		adb.o kitty.o kitty_commun.o kitty_crypt.o kitty_image.o kitty_registry.o kitty_ssh.o kitty_tools.o kitty_win.o \
 		urlhack.o \
-		../../bcrypt/bcrypt.a ../../jpeg/libjpeg.a \
+		../../bcrypt/kitty_bcrypt.a ../../jpeg/libjpeg.a \
 		../../regex/libregex.a ../../md5/MD5check.a ../../mini/mini.a ../../blocnote/notepad.a ../../base64/base64.a \
 		-ladvapi32 -lcomctl32 -lcomdlg32 -lgdi32 -limm32 \
 		-lshell32 -luser32 -lwinmm -lwinspool \
@@ -1629,7 +1630,7 @@ putty_portable.exe: aqsync.o be_all_s.o be_misc.o callback.o cmdline.o conf.o \
 		import.o sshrsag.o sshdssg.o sshprime.o \
 		adb.o kitty_portable.o kitty_commun_portable.o kitty_crypt.o kitty_image.o kitty_registry.o kitty_ssh.o kitty_tools.o kitty_win.o \
 		urlhack.o \
-		../../bcrypt/bcrypt.a ../../jpeg/libjpeg.a \
+		../../bcrypt/kitty_bcrypt.a ../../jpeg/libjpeg.a \
 		../../regex/libregex.a ../../md5/MD5check.a ../../mini/mini.a ../../blocnote/notepad.a ../../base64/base64.a \
 		-ladvapi32 -lcomctl32 -lcomdlg32 -lgdi32 -limm32 \
 		-lshell32 -luser32 -lwinmm -lwinspool \
@@ -1672,7 +1673,7 @@ putty_zmodem.exe: be_all_s.o callback.o cmdline.o conf.o config.o cproxy.o dialo
 		import.o miscucs.o sshrsag.o sshdssg.o sshprime.o \
 		adb.o kitty.o kitty_commun.o kitty_crypt.o kitty_image.o kitty_registry.o kitty_ssh.o kitty_tools.o kitty_win.o \
 		urlhack.o \
-		../../bcrypt/bcrypt.a ../../jpeg/libjpeg.a \
+		../../bcrypt/kitty_bcrypt.a ../../jpeg/libjpeg.a \
 		../../regex/libregex.a ../../md5/MD5check.a ../../mini/mini.a ../../blocnote/notepad.a ../../base64/base64.a \
 		-ladvapi32 -lcomctl32 -lcomdlg32 -lgdi32 -limm32 \
 		-lshell32 -luser32 -lwinmm -lwinspool \
@@ -1692,7 +1693,7 @@ putty_dll.exe: be_all_s.o cmdline.o conf.o config.o cproxy.o dialog.o ldisc.o \
 		winutils.o winx11.o x11fwd.o \
 		cygcfg.o cygterm.o winpzmodem.o wincapi.o \
 		kitty.o kitty_commun.o kitty_crypt.o kitty_image.o kitty_registry.o kitty_ssh.o kitty_tools.o kitty_win.o \
-		urlhack.o kitty.dll
+		urlhack.o putty.dll
 	$(CC) -mwindows $(LDFLAGS) -o $@ -Wl,-Map,putty.map be_all_s.o \
 		cmdline.o conf.o config.o cproxy.o dialog.o ldisc.o ldiscucs.o \
 		logging.o minibidi.o misc.o pgssapi.o pinger.o portfwd.o \
@@ -1709,7 +1710,7 @@ putty_dll.exe: be_all_s.o cmdline.o conf.o config.o cproxy.o dialog.o ldisc.o \
 		cygcfg.o cygterm.o winpzmodem.o wincapi.o \
 		kitty.o kitty_commun.o kitty_crypt.o kitty_image.o kitty_registry.o kitty_ssh.o kitty_tools.o kitty_win.o \
 		urlhack.o \
-		kitty.dll \
+		putty.dll \
 		-limm32 -lole32 -lshell32 -luser32 -lwinmm -lwinspool \
 		-ladvapi32 -lcomctl32 -lcomdlg32 -lgdi32 -limm32 \
 		-lwsock32 -lpsapi -lole32 -lcrypt32
@@ -1722,6 +1723,6 @@ xml:
 	cat ../../kitty.xml | sed 's/<Program_Version>.*<\/Program_Version>/<Program_Version>'`cat version.txt`'<\/Program_Version>/' | sed 	's/<Program_Release_Month>.*<\/Program_Release_Month>/<Program_Release_Month>'`date +"%m"`'<\/Program_Release_Month>/' | sed 	's/<Program_Release_Day>.*<\/Program_Release_Day>/<Program_Release_Day>'`date +"%d"`'<\/Program_Release_Day>/' | sed 	's/<Program_Release_Year>.*<\/Program_Release_Year>/<Program_Release_Year>'`date +"%Y"`'<\/Program_Release_Year>/' | sed 's/<File_Size_Bytes>.*<\/File_Size_Bytes>/<File_Size_Bytes>'`ls -l putty.exe|awk '{print $5}'`'<\/File_Size_Bytes>/' > kitty.xml
 
 clean: FORCE
-	rm -f *.o *.exe *.res.o *.map *.bak ../*.bak ../../*.bak kitty.log ../*.o kitty.dll
+	rm -f *.o *.exe *.res.o *.map *.bak ../*.bak ../../*.bak kitty.log ../*.o putty.dll
 
 FORCE:

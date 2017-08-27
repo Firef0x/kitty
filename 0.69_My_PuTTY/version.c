@@ -16,8 +16,8 @@
 
 #ifdef PERSOPORT
 #include <string.h>
-const char ver[] = "Custom build" ;
-char sshver[] = "PuTTY-KiTTY\0                           " ;
+const char ver[] = TEXTVER;
+char sshver[] = SSHVER;
 void set_sshver( char * vers ) { 
 	if(strlen(vers)<40 ) {
 		strcpy( sshver, vers ) ; 

@@ -3,12 +3,12 @@
  * the configuration of a PuTTY session.
  */
 
+#include "putty.h"
 #include <stdio.h>
 #include <stddef.h>
 #include <assert.h>
 
 #include "tree234.h"
-#include "putty.h"
 
 /*
  * Enumeration of types used in keys and values.
@@ -391,7 +391,7 @@ void conf_set_int(Conf *conf, int primary, int value)
     assert(subkeytypes[primary] == TYPE_NONE);
     assert(valuetypes[primary] == TYPE_INT);
     entry->key.primary = primary;
-    entry->value.u.intval = value; 
+    entry->value.u.intval = value;
     conf_insert(conf, entry);
 }
 

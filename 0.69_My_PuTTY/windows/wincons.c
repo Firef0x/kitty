@@ -370,7 +370,7 @@ static void console_data_untrusted(HANDLE hout, const char *data, int len)
 int console_get_userpass_input(prompts_t *p,
                                const unsigned char *in, int inlen)
 {
-    HANDLE hin, hout;
+    HANDLE hin = NULL, hout = NULL;
     size_t curr_prompt;
 
     /*

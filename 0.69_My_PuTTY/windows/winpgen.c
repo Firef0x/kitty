@@ -318,9 +318,9 @@ static INT_PTR CALLBACK AboutProc(HWND hwnd, UINT msg,
 	  case 101:
 	    EnableWindow(hwnd, 0);
 #ifdef INTEGRATED_KEYGEN
-	    DialogBox(hinst, MAKEINTRESOURCE(814), hwnd, LicenceProc);
+	    DialogBox(hinst, MAKEINTRESOURCE(814), hwnd, (DLGPROC)LicenceProc);
 #else
-	    DialogBox(hinst, MAKEINTRESOURCE(214), hwnd, LicenceProc);
+	    DialogBox(hinst, MAKEINTRESOURCE(214), hwnd, (DLGPROC)LicenceProc);
 #endif
 	    EnableWindow(hwnd, 1);
 	    SetActiveWindow(hwnd);
@@ -699,7 +699,7 @@ void load_key_file(HWND hwnd, struct MainDlgState *state,
 #else
 				    MAKEINTRESOURCE(210),
 #endif
-				    NULL, PassphraseProc,
+				    NULL, (DLGPROC)PassphraseProc,
 				    (LPARAM) &pps);
 	    if (!dlgret) {
 		ret = -2;
@@ -1103,9 +1103,9 @@ static INT_PTR CALLBACK MainDlgProc(HWND hwnd, UINT msg,
 	  case IDC_ABOUT:
 	    EnableWindow(hwnd, 0);
 #ifdef INTEGRATED_KEYGEN
-	    DialogBox(hinst, MAKEINTRESOURCE(813), hwnd, AboutProc);
+	    DialogBox(hinst, MAKEINTRESOURCE(813), hwnd, (DLGPROC)AboutProc);
 #else
-	    DialogBox(hinst, MAKEINTRESOURCE(213), hwnd, AboutProc);
+	    DialogBox(hinst, MAKEINTRESOURCE(213), hwnd, (DLGPROC)AboutProc);
 #endif
 	    EnableWindow(hwnd, 1);
 	    SetActiveWindow(hwnd);
@@ -1584,7 +1584,7 @@ int WINAPI KeyGen_WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmdline, int sho
     }
 
     random_ref();
-    ret = DialogBox(hinst, MAKEINTRESOURCE(201), NULL, MainDlgProc) != IDOK;
+    ret = DialogBox(hinst, MAKEINTRESOURCE(201), NULL, (DLGPROC)MainDlgProc) != IDOK;
 
     cleanup_exit(ret);
     return ret;			       /* just in case optimiser complains */

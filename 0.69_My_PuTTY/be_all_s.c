@@ -3,8 +3,8 @@
  * including ssh, plus the serial backend.
  */
 
-#include <stdio.h>
 #include "putty.h"
+#include <stdio.h>
 
 /*
  * This appname is not strictly in the right place, since Plink

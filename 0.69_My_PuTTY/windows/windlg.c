@@ -2,6 +2,8 @@
  * windlg.c - dialogs for PuTTY(tel), including the configuration dialog.
  */
 
+ #include "kitty_commun.h"
+#include "putty.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
@@ -9,7 +11,6 @@
 #include <ctype.h>
 #include <time.h>
 
-#include "putty.h"
 #include "ssh.h"
 #include "win_res.h"
 #include "storage.h"
@@ -51,7 +52,6 @@ extern Conf *conf;		       /* defined in window.c */
 #include <math.h>
 #include <process.h>
 #include "kitty.h"
-#include "kitty_commun.h"
 #include "kitty_registry.h"
 
 extern char BuildVersionTime[256] ;
@@ -236,7 +236,7 @@ static INT_PTR CALLBACK AboutProc(HWND hwnd, UINT msg,
     static HCURSOR hCursorHover;
     static int message_timer = 1000 ;
     static char * mess = NULL ;
-	
+
     switch (msg) {
 	case WM_INITDIALOG: {
 		char buffer[1024] ;
@@ -248,14 +248,14 @@ static INT_PTR CALLBACK AboutProc(HWND hwnd, UINT msg,
 		/* Creation des association de fichiers .ktx */
 		CreateFileAssoc() ;
 #endif
-		
-		sprintf( buffer, "KiTTY - %s", BuildVersionTime ) ;
+
+		sprintf( buffer, "PuTTY - %s", BuildVersionTime ) ;
 		SetDlgItemText(hwnd,IDA_VERSION,buffer);
-        
+
 		str = dupprintf("About %s That's all folks !", appname);
 		SetWindowText(hwnd, str);
 		sfree(str);
-        
+
 		if (hFontTitle == NULL) {
 			if (NULL == (hFontTitle = (HFONT)SendDlgItemMessage(hwnd,IDA_VERSION,WM_GETFONT,0,0)))
 				hFontTitle = GetStockObject(DEFAULT_GUI_FONT);
@@ -269,7 +269,7 @@ static INT_PTR CALLBACK AboutProc(HWND hwnd, UINT msg,
 		GetObject(hFontHover,sizeof(LOGFONT),&lf);
 		lf.lfUnderline = TRUE;
 		hFontNormal = CreateFontIndirect(&lf);
-	
+
 		//  Cursor setup
 		hCursorNormal = LoadCursor( NULL, MAKEINTRESOURCE((DWORD)IDC_ARROW) ) ;
 		if (!(hCursorHover = LoadCursor( NULL, (LPCTSTR)MAKEINTRESOURCE((DWORD)IDC_HAND) )))
@@ -281,14 +281,14 @@ static INT_PTR CALLBACK AboutProc(HWND hwnd, UINT msg,
 		capture_webpage = FALSE;
 
 		CenterDlgInParent(hwnd);
-		
+
 		mess = (char*)MESSAGE ;
 		SetDlgItemText(hwnd,IDC_BAN,mess);
 		if( strlen( mess ) > 0 ) SetTimer(hwnd, message_timer, 100, NULL) ;
-		return 1; 
+		return 1;
 		}
 		break ;
-		
+
 	case WM_TIMER:
 		if ((UINT_PTR)wParam == message_timer) {
 			mess++ ;
@@ -296,7 +296,7 @@ static INT_PTR CALLBACK AboutProc(HWND hwnd, UINT msg,
 			if( strlen( mess ) < strlen("                                                                                       ") ) mess = (char*)MESSAGE ;
 			}
 		break ;
-	
+
 	case WM_NCACTIVATE:
 		if (!(BOOL)wParam) { //  we're not active, clear hover states
 			hover_email = FALSE;
@@ -307,7 +307,7 @@ static INT_PTR CALLBACK AboutProc(HWND hwnd, UINT msg,
 			InvalidateRect(GetDlgItem(hwnd,IDC_WEBPAGE),NULL,FALSE);
 			}
 		return FALSE;
-	
+
 	case WM_CTLCOLORSTATIC: {
 		DWORD dwId = GetWindowLong((HWND)lParam,GWL_ID);
 		HDC hdc = (HDC)wParam;
@@ -332,7 +332,7 @@ static INT_PTR CALLBACK AboutProc(HWND hwnd, UINT msg,
 			}
 		}
 		break ;
-	
+
 	case WM_MOUSEMOVE:  {
 		POINT pt = { LOWORD(lParam), HIWORD(lParam) };
 		HWND hwndHover = ChildWindowFromPoint(hwnd,pt);
@@ -354,7 +354,7 @@ static INT_PTR CALLBACK AboutProc(HWND hwnd, UINT msg,
 			}
 		}
 		break;
-	
+
 	case WM_LBUTTONDOWN: {
 		POINT pt = { LOWORD(lParam), HIWORD(lParam) };
 		HWND hwndHover = ChildWindowFromPoint(hwnd,pt);
@@ -375,7 +375,7 @@ static INT_PTR CALLBACK AboutProc(HWND hwnd, UINT msg,
 		SetCursor((hover_email || hover_webpage)?hCursorHover:hCursorNormal);
 		}
 		break;
-	
+
 	case WM_LBUTTONUP: {
 		POINT pt = { LOWORD(lParam), HIWORD(lParam) };
 		HWND hwndHover = ChildWindowFromPoint(hwnd,pt);
@@ -396,7 +396,7 @@ static INT_PTR CALLBACK AboutProc(HWND hwnd, UINT msg,
 		SetCursor((hover_email || hover_webpage)?hCursorHover:hCursorNormal);
 		}
 		break;
-      
+
       case WM_COMMAND:
 	switch (LOWORD(wParam)) {
 	  case IDOK:
@@ -464,11 +464,12 @@ static INT_PTR CALLBACK AboutProc(HWND hwnd, UINT msg,
 	SetWindowText(hwnd, str);
 	sfree(str);
         {
-            char *buildinfo_text = buildinfo("\r\n");
+            // char *buildinfo_text = buildinfo("\r\n");
+			char *buildinfo_text = "";
             char *text = dupprintf
                 ("%s\r\n\r\n%s\r\n\r\n%s\r\n\r\n%s",
                  appname, ver, buildinfo_text,
-                 "\251 " SHORT_COPYRIGHT_DETAILS ". All rights reserved.");
+                 "(c) " SHORT_COPYRIGHT_DETAILS ". All rights reserved.");
             sfree(buildinfo_text);
             SetDlgItemText(hwnd, IDA_TEXT, text);
             sfree(text);
@@ -658,7 +659,7 @@ static INT_PTR CALLBACK GenericMainDlgProc(HWND hwnd, UINT msg,
 	RECT rcClient ;
 	int h ;
 	GetWindowRect(hwnd, &rcClient) ;
-	
+
 	if( GetConfigBoxWindowHeight() > 0 ) { h = GetConfigBoxWindowHeight() ; }
 	else if( GetConfigBoxHeight() >= 100 ) { h = GetConfigBoxHeight() ; }
 	else {
@@ -666,10 +667,10 @@ static INT_PTR CALLBACK GenericMainDlgProc(HWND hwnd, UINT msg,
 		else if( GetConfigBoxHeight() <= 15 ) { h = 515 ; }
 		else {
 			h = ceil( (584-530)*GetConfigBoxHeight()/(20-16)+310 ) ;
-			if( h < 515 ) h = 515 ; 
+			if( h < 515 ) h = 515 ;
 			}
 		}
-	
+
 	MoveWindow( hwnd, rcClient.left, rcClient.top, rcClient.right-rcClient.left, h, TRUE ) ;
 	}
 #endif
@@ -863,14 +864,14 @@ static INT_PTR CALLBACK GenericMainDlgProc(HWND hwnd, UINT msg,
 	    HTREEITEM i;
 	    TVITEM item;
 	    char buffer[64];
- 
+
             if (GetWindowLongPtr(hwnd, GWLP_USERDATA) != 1)
                 return 0;
 
             i = TreeView_GetSelection(((LPNMHDR) lParam)->hwndFrom);
- 
+
  	    SendMessage (hwnd, WM_SETREDRAW, FALSE, 0);
- 
+
 	    item.hItem = i;
 	    item.pszText = buffer;
 	    item.cchTextMax = sizeof(buffer);
@@ -897,7 +898,7 @@ static INT_PTR CALLBACK GenericMainDlgProc(HWND hwnd, UINT msg,
 	    create_controls(hwnd, (char *)item.lParam);
 
 	    dlg_refresh(NULL, &dp);    /* set up control values */
- 
+
 	    SendMessage (hwnd, WM_SETREDRAW, TRUE, 0);
  	    InvalidateRect (hwnd, NULL, TRUE);
 
@@ -942,7 +943,7 @@ void modal_about_box(HWND hwnd)
 {
     EnableWindow(hwnd, 0);
 #if (defined PERSOPORT) && (!defined FDJ)
-	if( get_param("PUTTY") ) DialogBox(hinst, MAKEINTRESOURCE(IDD_ABOUTBOX), hwnd, AboutProcOrig);
+	if( get_param("PUTTY") ) DialogBox(hinst, MAKEINTRESOURCE(IDD_ABOUTBOX), hwnd, (DLGPROC)AboutProcOrig);
 	else DialogBox(hinst, MAKEINTRESOURCE(IDD_KITTYABOUT), hwnd, AboutProc);
 #else
     DialogBox(hinst, MAKEINTRESOURCE(IDD_ABOUTBOX), hwnd, AboutProc);
@@ -966,7 +967,7 @@ void defuse_showwindow(void)
     {
 	HWND hwnd;
 	hwnd = CreateDialog(hinst, MAKEINTRESOURCE(IDD_ABOUTBOX),
-			    NULL, NullDlgProc);
+			    NULL, (DLGPROC)NullDlgProc);
 	ShowWindow(hwnd, SW_HIDE);
 	SetActiveWindow(hwnd);
 	DestroyWindow(hwnd);
@@ -993,7 +994,7 @@ int do_config(void)
 
     ret =
 	SaneDialogBox(hinst, MAKEINTRESOURCE(IDD_MAINBOX), NULL,
-		  GenericMainDlgProc);
+		  (DLGPROC)GenericMainDlgProc);
 
     ctrl_free_box(ctrlbox);
     winctrl_cleanup(&ctrls_panel);
@@ -1031,7 +1032,7 @@ int do_reconfig(HWND hwnd, int protcfginfo)
     dp.shortcuts['g'] = TRUE;	       /* the treeview: `Cate&gory' */
 
     ret = SaneDialogBox(hinst, MAKEINTRESOURCE(IDD_MAINBOX), NULL,
-		  GenericMainDlgProc);
+		  (DLGPROC)GenericMainDlgProc);
 
     ctrl_free_box(ctrlbox);
     winctrl_cleanup(&ctrls_base);
@@ -1044,7 +1045,7 @@ int do_reconfig(HWND hwnd, int protcfginfo)
 #if (defined IMAGEPORT) && (!defined FDJ)
 	if( get_param("BACKGROUNDIMAGE") && (conf_get_int(conf,CONF_bg_slideshow)/*cfg.bg_slideshow*/!=conf_get_int(backup_conf,CONF_bg_slideshow)/*backup_cfg.bg_slideshow*/) ) {
 		KillTimer( hwnd, TIMER_SLIDEBG ) ;
-		if((conf_get_int(conf,CONF_bg_type)/*cfg.bg_type*/!=0)&&(conf_get_int(conf,CONF_bg_slideshow)/*cfg.bg_slideshow*/>0)) 
+		if((conf_get_int(conf,CONF_bg_type)/*cfg.bg_type*/!=0)&&(conf_get_int(conf,CONF_bg_slideshow)/*cfg.bg_slideshow*/>0))
 			SetTimer(hwnd, TIMER_SLIDEBG, (int)(conf_get_int(conf,CONF_bg_slideshow)/*cfg.bg_slideshow*/*1000), NULL) ;
 		InvalidateRect(hwnd, NULL, TRUE);
 		}
@@ -1086,7 +1087,7 @@ void showeventlog(HWND hwnd)
 {
     if (!logbox) {
 	logbox = CreateDialog(hinst, MAKEINTRESOURCE(IDD_LOGBOX),
-			      hwnd, LogProc);
+			      hwnd, (DLGPROC)LogProc);
 	ShowWindow(logbox, SW_SHOWNORMAL);
     }
     SetActiveWindow(logbox);
@@ -1101,7 +1102,7 @@ void showabout(HWND hwnd)
 	sprintf( buffer, "That's all folks ! version\r\n%s", BuildVersionTime ) ;
     MessageBox( hwnd, buffer, "Info", MB_OK ) ;
 	*/
-	if( get_param("PUTTY") ) DialogBox(hinst, MAKEINTRESOURCE(IDD_ABOUTBOX), hwnd, AboutProcOrig);
+	if( get_param("PUTTY") ) DialogBox(hinst, MAKEINTRESOURCE(IDD_ABOUTBOX), hwnd, (DLGPROC)AboutProcOrig);
 	else {
 		DialogBox(hinst, MAKEINTRESOURCE(IDD_KITTYABOUT), hwnd, AboutProc);
 		if( GetIconeFlag() != -1 ) SetNewIcon( hwnd, conf_get_filename(conf,CONF_iconefile)->path, conf_get_int(conf,CONF_icone), SI_NEXT ) ;
@@ -1169,10 +1170,10 @@ int verify_ssh_host_key(void *frontend, char *host, int port,
 			       appname);
 	char *caption = dupprintf(mbtitle, appname);
 #ifdef PERSOPORT
-	if( GetAutoStoreSSHKeyFlag() ) { 
+	if( GetAutoStoreSSHKeyFlag() ) {
 	    logevent(NULL, "Auto update host key") ;
-	    mbret=IDYES ; 
-	} else 
+	    mbret=IDYES ;
+	} else
 #endif
 	mbret = message_box(text, caption,
 			    MB_ICONWARNING | MB_YESNOCANCEL | MB_DEFBUTTON3,
@@ -1193,10 +1194,10 @@ int verify_ssh_host_key(void *frontend, char *host, int port,
 	char *text = dupprintf(absentmsg, keytype, fingerprint, appname);
 	char *caption = dupprintf(mbtitle, appname);
 #ifdef PERSOPORT
-	if( GetAutoStoreSSHKeyFlag() ) { 
+	if( GetAutoStoreSSHKeyFlag() ) {
 	    logevent(NULL, "Auto store host key") ;
-	    mbret=IDYES ; 
-	} else 
+	    mbret=IDYES ;
+	} else
 #endif
 	mbret = message_box(text, caption,
 			    MB_ICONWARNING | MB_YESNOCANCEL | MB_DEFBUTTON3,
@@ -1311,7 +1312,7 @@ int askappend(void *frontend, Filename *filename,
 
 /*
  * Warn about the obsolescent key file format.
- * 
+ *
  * Uniquely among these functions, this one does _not_ expect a
  * frontend handle. This means that if PuTTY is ported to a
  * platform which requires frontend handles, this function will be

@@ -5,10 +5,10 @@
  * depending on what's currently configured.
  */
 
+#include "putty.h"
 #include <stdio.h>
 #include <ctype.h>
 
-#include "putty.h"
 #include "terminal.h"
 #include "ldisc.h"
 

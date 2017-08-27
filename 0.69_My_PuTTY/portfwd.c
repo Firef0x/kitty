@@ -2,10 +2,10 @@
  * SSH port forwarding.
  */
 
+#include "putty.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "putty.h"
 #include "ssh.h"
 
 #ifndef FALSE
@@ -518,7 +518,7 @@ static int pfl_accepting(Plug p, accept_fn_t constructor, accept_ctx_t ctx)
     } else {
 	pf->dynamic = 0;
 	pf->hostname = dupstr(pl->hostname);
-	pf->port = pl->port;	
+	pf->port = pl->port;
 	pf->c = new_sock_channel(pl->backhandle, pf);
 
 	if (pf->c == NULL) {

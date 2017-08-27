@@ -2,14 +2,14 @@
  * Session logging.
  */
 
+#include "putty.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 
 #include <time.h>
 #include <assert.h>
-
-#include "putty.h"
 
 /* log session to file stuff ... */
 struct LogContext {
@@ -38,10 +38,10 @@ void test_dir( Filename *filename ) {
 	int i ; char * name ;
 	if( filename == NULL ) return ;
 	if( strlen( filename_to_str(filename) ) == 0 ) return ;
-	
+
 	if( ( name = (char*) malloc( strlen( filename_to_str(filename) ) + 1 ) ) != NULL ) {
 		strcpy( name, filename_to_str(filename) ) ;
-		for( i=strlen(name)-1; i>=0 ; i-- ) 
+		for( i=strlen(name)-1; i>=0 ; i-- )
 			{ if( (name[i] == '\\') || (name[i]=='/' ) ) break ; }
 		if( i > 0 ) {
 			name[i] = '\0';
@@ -56,10 +56,10 @@ size_t m_strftime( char *s, size_t max, const char *format, const struct tm *tm)
 	char * nfor, b[128] ;
 	int p, i = 1 ;
 	size_t res ;
-	
+
 	if( (nfor = (char*) malloc( strlen( format ) + 1024 )) == NULL ) return 0 ;
 	strcpy( nfor, format ) ;
-	
+
 	sprintf( b, "%lu", mktime((struct tm*)tm) ) ;
 	while( (p=posi( "%s", nfor, i )) > 0 ) {
 		if( p==1 ) { del(nfor,p,2) ; insert(nfor,b,p); }
@@ -73,18 +73,18 @@ size_t m_strftime( char *s, size_t max, const char *format, const struct tm *tm)
 		}
 
 	res = strftime( s, max, nfor, tm ) ;
-	
+
 	free( nfor ) ;
 	return res ;
 	}
-	
+
 /* Procedure perso de conversion date (struct _SYSTEMTIME) -> char* */
 size_t t_strftime( char *s, size_t max, const char *format, const SYSTEMTIME st ) {
 	char * nfor, b[128] ;
 	int p, i = 1 ;
 	struct tm tm ;
 	size_t res = 0 ;
-	
+
 	tm.tm_sec = st.wSecond ;
 	tm.tm_min = st.wMinute ;
 	tm.tm_hour = st.wHour ;
@@ -106,7 +106,7 @@ size_t t_strftime( char *s, size_t max, const char *format, const SYSTEMTIME st 
 		}
 
 	res = m_strftime( s, max, nfor, &tm ) ;
-	
+
 	free( nfor ) ;
 
 	return res ;
@@ -127,7 +127,7 @@ int log_writetimestamp( struct LogContext *ctx ) {
 		struct tm tm = * localtime( &temps ) ;
 		m_strftime( buf, 127, conf_get_str(ctx->conf,CONF_logtimestamp) /*ctx->cfg.logtimestamp*/, &tm ) ;
 		}
-	
+
 	fwrite(buf, 1, strlen(buf), ctx->lgfp);
 	return 1;
 	}
@@ -308,7 +308,7 @@ void logfopen(void *handle)
     /* substitute special codes in file name */
     if (ctx->currlogfilename)
         filename_free(ctx->currlogfilename);
-    ctx->currlogfilename = 
+    ctx->currlogfilename =
         xlatlognam(conf_get_filename(ctx->conf, CONF_logfilename),
                    conf_get_str(ctx->conf, CONF_host),
                    conf_get_int(ctx->conf, CONF_port), &tm);

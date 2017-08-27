@@ -2,10 +2,10 @@
  * settings.c: read and write saved sessions. (platform-independent)
  */
 
+#include "putty.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "putty.h"
 #include "storage.h"
 
 /* rutty: */
@@ -426,7 +426,7 @@ static void gprefs(void *sesskey, const char *name, const char *def,
     sfree(value);
 }
 
-/* 
+/*
  * Write out a preference list.
  */
 static void wprefs(void *sesskey, const char *name,
@@ -742,7 +742,7 @@ void save_open_settings(void *sesskey, Conf *conf)
     write_setting_i(sesskey, "BgImageStyle", conf_get_int(conf, CONF_bg_image_style) /*cfg->bg_image_style*/);
     write_setting_i(sesskey, "BgImageAbsoluteX", conf_get_int(conf, CONF_bg_image_abs_x) /*cfg->bg_image_abs_x*/);
     write_setting_i(sesskey, "BgImageAbsoluteY", conf_get_int(conf, CONF_bg_image_abs_y) /*cfg->bg_image_abs_y*/);
-    write_setting_i(sesskey, "BgImagePlacement", conf_get_int(conf, CONF_bg_image_abs_fixed) /*cfg->bg_image_abs_fixed*/);  
+    write_setting_i(sesskey, "BgImagePlacement", conf_get_int(conf, CONF_bg_image_abs_fixed) /*cfg->bg_image_abs_fixed*/);
 	}
 #endif
 #ifdef URLPORT
@@ -759,7 +759,7 @@ void save_open_settings(void *sesskey, Conf *conf)
 	write_setting_filename(sesskey, "HyperlinkBrowser", conf_get_filename(conf, CONF_url_browser));
 	write_setting_i(sesskey, "HyperlinkRegularExpressionUseDefault", conf_get_int(conf, CONF_url_defregex));
 #ifndef NO_HYPERLINK
-	if( !strcmp(conf_get_str(conf, CONF_url_regex),"@°@°@NO REGEX--") ) 
+	if( !strcmp(conf_get_str(conf, CONF_url_regex),"@°@°@NO REGEX--") )
 		write_setting_s(sesskey, "HyperlinkRegularExpression", urlhack_default_regex ) ;
 	else
 		write_setting_s(sesskey, "HyperlinkRegularExpression", conf_get_str(conf, CONF_url_regex));
@@ -838,7 +838,7 @@ void save_open_settings(void *sesskey, Conf *conf)
     write_setting_i(sesskey, "SaveWindowPos", conf_get_int(conf, CONF_save_windowpos) /*cfg->save_windowpos*/); /* BKG */
     write_setting_i(sesskey, "ForegroundOnBell", conf_get_int(conf, CONF_foreground_on_bell) /*cfg->foreground_on_bell*/);
 
-    if( (strlen(conf_get_str(conf, CONF_host))+strlen(conf_get_str(conf, CONF_termtype))) < 1000 ) { 
+    if( (strlen(conf_get_str(conf, CONF_host))+strlen(conf_get_str(conf, CONF_termtype))) < 1000 ) {
 	sprintf( PassKey, "%s%sKiTTY", conf_get_str(conf, CONF_host), conf_get_str(conf, CONF_termtype) ) ;
     } else {
 	strcpy( PassKey, "" ) ;
@@ -1136,11 +1136,11 @@ void load_open_settings(void *sesskey, Conf *conf)
     gppi(sesskey, "TelnetRet", 1, conf, CONF_telnet_newline);
     gppi(sesskey, "LocalEcho", AUTO, conf, CONF_localecho);
     gppi(sesskey, "LocalEdit", AUTO, conf, CONF_localedit);
-#if (defined PERSOPORT) && (!defined FDJ)
+/* #if (defined PERSOPORT) && (!defined FDJ)
     gpps(sesskey, "Answerback", "KiTTY", conf, CONF_answerback);
-#else
+#else */
     gpps(sesskey, "Answerback", "PuTTY", conf, CONF_answerback);
-#endif
+// #endif
     gppi(sesskey, "AlwaysOnTop", 0, conf, CONF_alwaysontop);
     gppi(sesskey, "FullScreenOnAltEnter", 0, conf, CONF_fullscreenonaltenter);
     gppi(sesskey, "HideMousePtr", 0, conf, CONF_hide_mouseptr);
@@ -1483,14 +1483,14 @@ void load_open_settings(void *sesskey, Conf *conf)
     gppi(sesskey, "ForegroundOnBell", 0, conf, CONF_foreground_on_bell /*&cfg->foreground_on_bell*/);
 
     if( strlen(conf_get_str(conf, CONF_host))>0 ) {
-	if( (strlen(conf_get_str(conf, CONF_host))+strlen(conf_get_str(conf, CONF_termtype))) < 1000 ) { 
+	if( (strlen(conf_get_str(conf, CONF_host))+strlen(conf_get_str(conf, CONF_termtype))) < 1000 ) {
 		sprintf( PassKey, "%s%sKiTTY", conf_get_str(conf, CONF_host), conf_get_str(conf, CONF_termtype) ) ;
 	} else {
 		strcpy( PassKey, "" ) ;
 	}
 	gpps(sesskey, "Password", "", conf, CONF_password );
-   } else { 
-	if( strlen(conf_get_str(conf, CONF_termtype)) < 1000 ) { 
+   } else {
+	if( strlen(conf_get_str(conf, CONF_termtype)) < 1000 ) {
 		sprintf( PassKey, "%sKiTTY", conf_get_str(conf, CONF_termtype) ) ;
 	} else {
 		strcpy( PassKey, "" ) ;

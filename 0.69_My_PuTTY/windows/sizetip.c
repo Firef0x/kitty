@@ -2,11 +2,11 @@
  * sizetip.c - resize tips for PuTTY(tel) terminal window.
  */
 
+#include "putty.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <tchar.h>
-
-#include "putty.h"
 
 static ATOM tip_class = 0;
 

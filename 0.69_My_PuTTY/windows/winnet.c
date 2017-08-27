@@ -145,7 +145,7 @@ static int curpass;
 static int cmpfortree(void *av, void *bv)
 {
     Actual_Socket a = (Actual_Socket) av, b = (Actual_Socket) bv;
-    unsigned long as = (unsigned long) a->s, bs = (unsigned long) b->s;
+    uintptr_t as = (uintptr_t) a->s, bs = (uintptr_t) b->s;
     if (as < bs)
 	return -1;
     if (as > bs)

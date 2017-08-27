@@ -1,6 +1,6 @@
 /*
  * timing.c
- * 
+ *
  * This module tracks any timers set up by schedule_timer(). It
  * keeps all the currently active timers in a list; it informs the
  * front end of when the next timer is due to go off if that
@@ -27,10 +27,10 @@
  *
  */
 
+#include "putty.h"
 #include <assert.h>
 #include <stdio.h>
 
-#include "putty.h"
 #include "tree234.h"
 
 struct timer {
@@ -67,7 +67,7 @@ static int compare_timers(void *av, void *bv)
 	if (c)
 	    return c;
     }
-#else    
+#else
     if (a->fn < b->fn)
 	return -1;
     else if (a->fn > b->fn)

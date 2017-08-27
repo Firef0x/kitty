@@ -2,13 +2,13 @@
  * Platform-independent routines shared between all PuTTY programs.
  */
 
+#include "putty.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <limits.h>
 #include <ctype.h>
 #include <assert.h>
-#include "putty.h"
 #include "misc.h"
 
 /*
@@ -361,21 +361,21 @@ int toint(unsigned u)
 
 /*
  * Do an sprintf(), but into a custom-allocated buffer.
- * 
+ *
  * Currently I'm doing this via vsnprintf. This has worked so far,
  * but it's not good, because vsnprintf is not available on all
  * platforms. There's an ifdef to use `_vsnprintf', which seems
  * to be the local name for it on Windows. Other platforms may
  * lack it completely, in which case it'll be time to rewrite
  * this function in a totally different way.
- * 
+ *
  * The only `properly' portable solution I can think of is to
  * implement my own format string scanner, which figures out an
  * upper bound for the length of each formatting directive,
  * allocates the buffer as it goes along, and calls sprintf() to
  * actually process each directive. If I ever need to actually do
  * this, some caveats:
- * 
+ *
  *  - It's very hard to find a reliable upper bound for
  *    floating-point values. %f, in particular, when supplied with
  *    a number near to the upper or lower limit of representable
@@ -384,10 +384,10 @@ int toint(unsigned u)
  *    constants in <float.h>, or even to predict it dynamically by
  *    looking at the exponent of the specific float provided, but
  *    it won't be fun.
- * 
+ *
  *  - Don't forget to _check_, after calling sprintf, that it's
  *    used at most the amount of space we had available.
- * 
+ *
  *  - Fault any formatting directive we don't fully understand. The
  *    aim here is to _guarantee_ that we never overflow the buffer,
  *    because this is a security-critical function. If we see a
@@ -626,7 +626,7 @@ int base64_decode_atom(const char *atom, unsigned char *out)
 /* ----------------------------------------------------------------------
  * Generic routines to deal with send buffers: a linked list of
  * smallish blocks, with the operations
- * 
+ *
  *  - add an arbitrary amount of data to the end of the list
  *  - remove the first N bytes from the list
  *  - return a (pointer,length) pair giving some initial data in

@@ -2,12 +2,12 @@
  * A dummy Socket implementation which just holds an error message.
  */
 
+#include "putty.h"
 #include <stdio.h>
 #include <assert.h>
 
 #define DEFINE_PLUG_METHOD_MACROS
 #include "tree234.h"
-#include "putty.h"
 #include "network.h"
 
 typedef struct Socket_error_tag *Error_Socket;
